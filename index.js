@@ -2,6 +2,7 @@ var S3FS = require('s3fs');
 var crypto = require('crypto');
 var gm = require('gm');
 var mime = require('mime');
+var path = require('path');
 
 
 const DEFAULT_FORMAT = 'jpg';
