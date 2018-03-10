@@ -1,6 +1,6 @@
 var S3FS = require('s3fs');
 var crypto = require('crypto');
-var gm = require('gm');
+var gm = require('gm').subClass({ imageMagick: true });
 var mime = require('mime');
 var path = require('path');
 
