@@ -58,6 +58,7 @@ S3Storage.prototype._handleFile = function(req, file, cb) {
     s3options.ContentType = contentType;
     var outStream = self.s3fs.createWriteStream(filePath, s3options);
     gm(file.stream)
+      .autoOrient()
       .resize(self.options.gm.width , self.options.gm.height , self.options.gm.options)
       .stream(self.options.gm.format || DEFAULT_FORMAT)
       .pipe(outStream);
