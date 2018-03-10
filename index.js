@@ -61,7 +61,7 @@ S3Storage.prototype._handleFile = function(req, file, cb) {
     s3options.ContentType = contentType;
     var outStream = self.s3fs.createWriteStream(filePath, s3options);
     
-    self.options.gm.process(file.stream, outStream, function() {});
+    self.options.gm.process(gm, file.stream, outStream, function() {});
     
 //     gm(file.stream).size((err, size) => {
 //       console.log('size befor1:', size);
