@@ -23,12 +23,15 @@ function S3Storage(opts) {
   if (!opts.dirname) {
     throw new Error('dirname is required');
   }
+  if (!opts.gm) {
+    throw new Error('gm object is required');
+  }
+  if (!opts.gm.process) {
+    throw new Error('gm process function is required');
+  }
   this.options = opts;
   this.options.filename = (opts.filename || getFilename)
   this.s3fs = new S3FS(opts.bucket, opts);
-  if(!this.options.gm) {
-    this.options.gm = {};
-  }
   if(!this.options.s3) {
     this.options.s3 = {};
   }
@@ -57,17 +60,20 @@ S3Storage.prototype._handleFile = function(req, file, cb) {
     var s3options = self.options.s3;
     s3options.ContentType = contentType;
     var outStream = self.s3fs.createWriteStream(filePath, s3options);
-//     gm(file.stream)
+    
+    self.options.gm.process(file.stream, outStream, function() {});
+    
+//     gm(file.stream).size((err, size) => {
+//       console.log('size befor1:', size);
+//     });
+    
+    //     gm(file.stream)
 //       .resize(self.options.gm.width , self.options.gm.height , self.options.gm.options)
 //       .autoOrient()
 //       .stream(self.options.gm.format || DEFAULT_FORMAT)
 //       .pipe(outStream);
     
-    gm(file.stream).size((err, size) => {
-      console.log('size befor1:', size);
-    });
-    
-    let img = gm(file.stream).autoOrient().stream(self.options.gm.format || DEFAULT_FORMAT).pipe(outStream);
+//     let img = gm(file.stream).autoOrient().stream(self.options.gm.format || DEFAULT_FORMAT).pipe(outStream);
 //     .toBuffer((err, noExifImg) => {
 //       console.log("now a buffer")
 //       gm(noExifImg)
@@ -81,7 +87,6 @@ S3Storage.prototype._handleFile = function(req, file, cb) {
     
     outStream.on('error', cb);
     outStream.on('finish', function() {
-      console.log("finished")
       cb(null, {
         size: outStream.bytesWritten,
         key: filename,
