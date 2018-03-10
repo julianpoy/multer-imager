@@ -67,29 +67,25 @@ S3Storage.prototype._handleFile = function(req, file, cb) {
       console.log('size befor1:', size);
     });
     
-    let img = gm(file.stream).autoOrient()
-    .size((err, size) => {
-      console.log('size befor2:', size);
-    })
-    .toBuffer((err, noExifImg) => {
-      console.log("now a buffer")
-      gm(noExifImg)
-      .size((err, size) => {
-         console.log('size after:', size);
-      })
-      .resize(self.options.gm.width , self.options.gm.height , self.options.gm.options)
-      .stream(self.options.gm.format || DEFAULT_FORMAT)
-      .pipe(outStream);
-      
-      console.log("set up")
-      outStream.on('error', cb);
-      outStream.on('finish', function() {
-        console.log("finished")
-        cb(null, {
-          size: outStream.bytesWritten,
-          key: filename,
-          location: 'https://' + self.options.bucket + '.s3.amazonaws.com' + filePath
-        });
+    let img = gm(file.stream).autoOrient().stream(self.options.gm.format || DEFAULT_FORMAT).pipe(outStream);
+//     .toBuffer((err, noExifImg) => {
+//       console.log("now a buffer")
+//       gm(noExifImg)
+//       .size((err, size) => {
+//          console.log('size after:', size);
+//       })
+//       .resize(self.options.gm.width , self.options.gm.height , self.options.gm.options)
+//       .stream(self.options.gm.format || DEFAULT_FORMAT)
+//       .pipe(outStream);
+//     });
+    
+    outStream.on('error', cb);
+    outStream.on('finish', function() {
+      console.log("finished")
+      cb(null, {
+        size: outStream.bytesWritten,
+        key: filename,
+        location: 'https://' + self.options.bucket + '.s3.amazonaws.com' + filePath
       });
     });
   });
