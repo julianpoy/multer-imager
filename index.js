@@ -57,32 +57,35 @@ S3Storage.prototype._handleFile = function(req, file, cb) {
     var s3options = self.options.s3;
     s3options.ContentType = contentType;
     var outStream = self.s3fs.createWriteStream(filePath, s3options);
-    gm(file.stream)
-      .resize(self.options.gm.width , self.options.gm.height , self.options.gm.options)
-      .autoOrient()
-      .stream(self.options.gm.format || DEFAULT_FORMAT)
-      .pipe(outStream);
-    
-//     let img = gm(file.stream).autoOrient().noProfile()
-//     .size((err, size) => {
-//       console.log('size befor:', size);
-//     })
-//     .toBuffer((err, noExifImg) => {
-//       gm(noExifImg)
-//       .size((err, size) => {
-//          console.log('size after:', size);
-//       })
+//     gm(file.stream)
 //       .resize(self.options.gm.width , self.options.gm.height , self.options.gm.options)
+//       .autoOrient()
 //       .stream(self.options.gm.format || DEFAULT_FORMAT)
 //       .pipe(outStream);
-//     });
-
-    outStream.on('error', cb);
-    outStream.on('finish', function() {
-      cb(null, {
-        size: outStream.bytesWritten,
-        key: filename,
-        location: 'https://' + self.options.bucket + '.s3.amazonaws.com' + filePath
+    
+    let img = gm(file.stream).autoOrient().noProfile()
+    .size((err, size) => {
+      console.log('size befor:', size);
+    })
+    .toBuffer((err, noExifImg) => {
+      console.log("now a buffer")
+      gm(noExifImg)
+      .size((err, size) => {
+         console.log('size after:', size);
+      })
+      .resize(self.options.gm.width , self.options.gm.height , self.options.gm.options)
+      .stream(self.options.gm.format || DEFAULT_FORMAT)
+      .pipe(outStream);
+      
+      console.log("set up")
+      outStream.on('error', cb);
+      outStream.on('finish', function() {
+        console.log("finished")
+        cb(null, {
+          size: outStream.bytesWritten,
+          key: filename,
+          location: 'https://' + self.options.bucket + '.s3.amazonaws.com' + filePath
+        });
       });
     });
   });
