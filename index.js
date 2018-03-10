@@ -63,9 +63,13 @@ S3Storage.prototype._handleFile = function(req, file, cb) {
 //       .stream(self.options.gm.format || DEFAULT_FORMAT)
 //       .pipe(outStream);
     
+    gm(file.stream).size((err, size) => {
+      console.log('size befor1:', size);
+    });
+    
     let img = gm(file.stream).autoOrient().noProfile()
     .size((err, size) => {
-      console.log('size befor:', size);
+      console.log('size befor2:', size);
     })
     .toBuffer((err, noExifImg) => {
       console.log("now a buffer")
