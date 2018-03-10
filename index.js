@@ -67,7 +67,7 @@ S3Storage.prototype._handleFile = function(req, file, cb) {
       console.log('size befor1:', size);
     });
     
-    let img = gm(file.stream).autoOrient().noProfile()
+    let img = gm(file.stream).autoOrient()
     .size((err, size) => {
       console.log('size befor2:', size);
     })
