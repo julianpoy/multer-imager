@@ -30,7 +30,8 @@ function S3Storage(opts) {
     throw new Error('gm process function is required');
   }
   this.options = opts;
-  this.options.filename = (opts.filename || getFilename)
+  this.options.filename = (opts.filename || getFilename);
+  this.options.gm.format = (opts.gm.format || DEFAULT_FORMAT);
   this.s3fs = new S3FS(opts.bucket, opts);
   if(!this.options.s3) {
     this.options.s3 = {};
